@@ -72,62 +72,73 @@ Mono amplifier
 [example](https://faustide.grame.fr/?code=https://faustdoc.grame.fr/workshops/2020-04-10-faust-101/exfaust6/exfaust6.dsp)
 
 Stereo amplifier
-`monoamp = _, hslider("volume", 0.1, 0, 1, 0.01) : *;
-process = monoamp,monoamp;`
+```
+monoamp = _, hslider("volume", 0.1, 0, 1, 0.01) : *;
+process = monoamp,monoamp;
+```
 
 cleaner code of stereo amplifier
 
-`monoamp = _, vslider("volume", 0.1, 0, 1, 0.01) : *;
+```
+monoamp = _, vslider("volume", 0.1, 0, 1, 0.01) : *;
 stereoamp = monoamp,monoamp;
-process= stereoamp;`
+process= stereoamp;
+```
 
 Objects GUI > groups, sub groups, buttons, sliders
 
 Sliders can have styles > sliders have metadatas> metadatas are extracted from the faust compiler
 
-`monoamp = _, vslider("volume[style:knob]", 0.1, 0, 1, 0.01) : *;
+```
+monoamp = _, vslider("volume[style:knob]", 0.1, 0, 1, 0.01) : *;
 stereoamp = monoamp,monoamp;
-process= stereoamp;`
+process= stereoamp;
+```
 
 Faust architecture are ways to architect to build > architecture to make different types of files (max,caqt, etc...)
 
-`// monoamp = _, vslider("volume[style:knob]", 0.1, 0, 1, 0.01) : *;
+```
+// monoamp = _, vslider("volume[style:knob]", 0.1, 0, 1, 0.01) : *;
 // monoamp =_,0.1:*; //core syntax
 //monoamp = _*0.1; //infix notation
 monoamp = *(0.1); //prefix notation
-process= monoamp;`
+process= monoamp;
+```
 
 how to mute the signal
 
 [example](https://faustide.grame.fr/?code=https://faustdoc.grame.fr/workshops/2020-04-10-faust-101/exfaust10/exfaust10.dsp)
 
-`mute = *(1-checkbox("mute"));
+```
+mute = *(1-checkbox("mute"));
 monoamp = *(vslider("volume[style:knob]", 0.1, 0, 1, 0.01)):mute;
 
 stereoamp = monoamp,monoamp;
 
 process = stereoamp;
-`
+```
 basic layout
 
-`mute = *(1-checkbox("mute"));
+```
+mute = *(1-checkbox("mute"));
 monoamp = *(vslider("volume[style:knob]", 0.1, 0, 1, 0.01)):mute;
 
 stereoamp = hgroup("Marshall",monoamp,monoamp);
 
 process = stereoamp;
-`
+```
 
 We want to add a parameter to _monoamp_
  we want many monoamp parameters > so we use _par_
-`mute = *(1-checkbox("mute"));
+```
+mute = *(1-checkbox("mute"));
 
 monoamp(c) = *(vslider("volume %c[style:knob]", 0.1, 0, 1, 0.01)) : mute;
 
 stereoamp = hgroup("Marshall", monoamp(0),monoamp(1));
 
 process = stereoamp;
-`
+```
 so we want to use delay [example](https://faustide.grame.fr/?code=https://faustdoc.grame.fr/workshops/2020-04-10-faust-101/exfaust15/exfaust15.dsp)
 
 with 44100 we have a 1 second delay
@@ -137,28 +148,31 @@ so if we want to create an echo
 
 _~_ connect the output of the + to bounce, tilde compose faust operation creating a loop
 
-`bounce =@(4410):*(0.75);
+```
+bounce =@(4410):*(0.75);
 echo = + ~ bounce;
 
 process = echo,echo;
-`
+```
 if we want to use parameters in our echo??
 
-`bounce(d,f) =@(d):*(f);
+```
+bounce(d,f) =@(d):*(f);
 echo(d,f) = + ~ bounce(d,f);
 stereoecho(d,f) = echo(d,f),echo(d,f);
 process = stereoecho(4410, 0.75);
-`
+```
 we want a smarter feedback so as soon [example](https://faustide.grame.fr/?code=https://faustdoc.grame.fr/workshops/2020-04-10-faust-101/exfaust22/exfaust22.dsp)
 
-`bounce(d,f) = @(d) : *(f);
+```
+bounce(d,f) = @(d) : *(f);
 
 monoecho(d,f) = *(g) : +~bounce(d,f) with { g = 1 - max(0, f-l)/(1-l); l = 0.95;};
 
 stereoecho(d,f) = monoecho(d,f),monoecho(d,f);
 
 process = stereoecho(44100/4, hslider("feedback", 0, 0, 1, 0.01));
-`
+```
 from now on we can navigate inside the diagram in the ide
 
 ## Basic Oscillators in Faust
@@ -167,16 +181,19 @@ from now on we can navigate inside the diagram in the ide
 
 decimal part of the value subtracted to the integer part of the value
 
-`decimalpart(x) = x-int(x);
+```
+decimalpart(x) = x-int(x);
 phase = 0.125 : (+ : decimalpart) ~ _;
-process = phase;`
+process = phase;
+```
 
 ### Sawtooth signal generator
 
 using the sampling rate frequency we can
 [example](https://faustide.grame.fr/?code=https://faustdoc.grame.fr/workshops/2020-04-10-faust-101/exfaust25/exfaust25.dsp)
 
-`import("stdfaust.lib");
+```
+import("stdfaust.lib");
 
 decimalpart(x) = x-int(x);
 phase(f) = f/ma.SR : (+ : decimalpart) ~ _;
@@ -184,12 +201,13 @@ phase(f) = f/ma.SR : (+ : decimalpart) ~ _;
 sawtooth(f) = phase(f) * 2 - 1;
 
 process = sawtooth(hslider("freq",440,20,8000,1))*hslider("volume",0.1,0,1,0.01);
-`
+```
 
 So how to do a square wave?
 
 
-`import("stdfaust.lib");
+```
+import("stdfaust.lib");
 
 decimalpart(x) = x-int(x);
 phase(f) = f/ma.SR : (+ : decimalpart) ~ _;
@@ -197,7 +215,7 @@ phase(f) = f/ma.SR : (+ : decimalpart) ~ _;
 squarewave(f) = (phase(f) > 0.5) * 2 - 1;
 
 process = squarewave(440);
-`
+```
 comparision of 2 signals > boolean signal > so we create a square signal but with aliasing problems
 
 ### Additive Synthesis
@@ -210,14 +228,15 @@ band limited osccilator is the answer
 
 an additive synhtesis oscillator with n number of partials
 
-`import("stdfaust.lib");
+```
+import("stdfaust.lib");
 
 // Approximation of a sawtooth wave using additive synthesis
 
 sawtooth(f) = 2/ma.PI*sum(k, n, (-1)^k * os.osc((k+1)*f)/(k+1));
 
 process = sawtooth(55);
-`
+```
 we can approximate with precise numbers of partials, but we can also use band limited oscillators
 
 [band limited oscillators example](https://faustide.grame.fr/?code=https://faustdoc.grame.fr/workshops/2020-04-10-faust-101/exfaust35/exfaust35.dsp)
@@ -229,7 +248,8 @@ we can approximate with precise numbers of partials, but we can also use band li
 ## FM Synthesis
 
 
-`import("stdfaust.lib");
+```
+import("stdfaust.lib");
 
 // FM: Frequency modulation
 
@@ -241,5 +261,5 @@ process = FM(
             hslider("amp modulation", 0, 0, 1, 0.01)
             )
         <: _,_;
-`
+```
 [more information for libraries](https://faustlibraries.grame.fr/)
