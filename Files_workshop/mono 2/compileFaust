@@ -1,3 +1,0 @@
-#!/bin/bash
-
-faust -i -a faustMinimal.h FaustSynth.dsp -o MonoSynth/Source/FaustSynth.h 

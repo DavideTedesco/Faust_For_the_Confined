@@ -61,3 +61,34 @@ VST3 > sdk for it
 AU > using a mac > parts of toolchain if you have xcode installed
 
 macos > xcode > steps to make the plugins are different
+
+### Feedback delay
+[source code]()
+```
+import ("stdfaust.lib");
+
+echo(d,f) = +~de.delay(48000,10)*f
+with{
+del = d*ma.SR;
+};
+
+delay =hslider("delay",0.25,0,1,0.01);
+feedback= hslider("feedback",0.5,0,1,0.01);
+process = par(i,2,echo(delay,feedback));
+```
+
+in this other plugin we have also input instead of only output
+
+Faust Poly engine > synth from monophonic to polyphonic > with small
+
+nvoices > number of voices for polyphony
+```
+declare options "[nvoices:12]";
+
+import("stdfaust.lib");
+freq = nentry("freq",200,50,1000,0.01);
+gain = nentry("gain",0.5,0,1,0.01) : si.smoo;
+gate = button("gate") : si.smoo;
+cutoff = nentry("cutoff",10000,50,10000,0.01) : si.smoo;
+process = os.sawtooth(freq)*gain*gate : fi.lowpass(3,cutoff) <: _,_;
+```
